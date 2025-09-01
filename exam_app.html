@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journeyman Edge - Exam Setup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+        }
+        .hidden { display: none; }
+        /* Custom styles for the slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #374151; /* gray-700 */
+            border-radius: 5px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #3b82f6; /* blue-600 */
+            cursor: pointer;
+            margin-top: -8px;
+        }
+    </style>
+</head>
+<body class="text-white">
+    <header class="bg-gray-900 border-b border-gray-800">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center space-x-2">
+                 <svg class="h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <h1 class="text-xl font-black text-white">Journeyman<span class="text-blue-500">Edge</span></h1>
+            </a>
+            <a href="profile.html" class="text-gray-400 hover:text-white" title="Profile / Log In">
+                <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </a>
+        </div>
+    </header>
+
+    <div id="app" class="container mx-auto p-4 md:p-8 max-w-4xl">
+         <div id="loader" class="text-center p-8">
+            <h2 class="text-2xl font-bold">Verifying Access...</h2>
+         </div>
+
+         <div id="access-granted" class="hidden bg-gray-900 p-8 rounded-lg shadow-2xl">
+            <h2 class="text-3xl font-bold text-center mb-2" id="trade-title">Exam Setup</h2>
+            <p class="text-center text-gray-400 mb-8">Choose your exam length to begin.</p>
+            
+            <div class="mb-8">
+                <label for="time-slider" class="block text-sm font-medium text-gray-300 mb-2">Exam Duration</label>
+                <input type="range" id="time-slider" min="15" max="240" step="15" value="75" class="w-full">
+                <div class="text-center mt-4">
+                    <p class="text-2xl font-bold" id="time-display">1 hour 15 minutes</p>
+                    <p class="text-gray-400" id="question-count-display">Approximately 50 questions</p>
+                </div>
+            </div>
+            <button id="start-exam-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-10 rounded-md text-lg transition duration-300">Start Exam</button>
+         </div>
+        
+        <div id="access-denied" class="hidden bg-gray-900 p-8 rounded-lg shadow-2xl">
+            <h2 class="text-3xl font-bold text-center mb-2" id="denied-trade-title">Access Denied</h2>
+            <p class="text-center text-gray-400 mb-8">You need an active subscription for this trade to access the exams.</p>
+            <div id="pricing-options" class="flex flex-col md:flex-row justify-center max-w-4xl mx-auto gap-8">
+                 <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 flex flex-col w-full text-center">
+                    <h4 class="text-xl font-bold mb-2">1 Month Access</h4>
+                    <p class="text-4xl font-black my-4">$59<span class="text-lg font-medium text-gray-400">/CAD</span></p>
+                    <a href="#" data-plan="1m" class="purchase-btn mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold w-full py-3 px-6 rounded-lg transition duration-300">Choose Plan</a>
+                </div>
+                 <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 flex flex-col w-full text-center">
+                    <h4 class="text-xl font-bold mb-2">6 Months Access</h4>
+                    <p class="text-4xl font-black my-4">$99<span class="text-lg font-medium text-gray-400">/CAD</span></p>
+                    <a href="#" data-plan="6m" class="purchase-btn mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold w-full py-3 px-6 rounded-lg transition duration-300">Choose Plan</a>
+                </div>
+                 <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 flex flex-col w-full text-center">
+                    <h4 class="text-xl font-bold mb-2">1 Year Access</h4>
+                    <p class="text-4xl font-black my-4">$149<span class="text-lg font-medium text-gray-400">/CAD</span></p>
+                    <a href="#" data-plan="1y" class="purchase-btn mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold w-full py-3 px-6 rounded-lg transition duration-300">Choose Plan</a>
+                </div>
+            </div>
+             <p class="text-center mt-8 text-gray-400">Already purchased? Your access may have expired. Visit your <a href="profile.html" class="text-blue-400 hover:underline">profile</a> to check.</p>
+        </div>
+    </div>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script src="firebase-init.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loader = document.getElementById('loader');
+            const accessGranted = document.getElementById('access-granted');
+            const accessDenied = document.getElementById('access-denied');
+            const tradeTitle = document.getElementById('trade-title');
+            const deniedTradeTitle = document.getElementById('denied-trade-title');
+            const timeSlider = document.getElementById('time-slider');
+            const timeDisplay = document.getElementById('time-display');
+            const questionCountDisplay = document.getElementById('question-count-display');
+            const startExamBtn = document.getElementById('start-exam-btn');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const trade = urlParams.get('trade');
+
+            if (!trade) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            const tradeNames = {
+                electrician_construction: "Electrician (Construction)", welder: "Welder", carpenter: "Carpenter", plumber: "Plumber", steamfitter_pipefitter: "Steamfitter / Pipefitter", automotive_service_technician: "Automotive Service Technician", heavy_duty_equipment_technician: "Heavy Duty Equipment Technician", industrial_mechanic_millwright: "Industrial Mechanic (Millwright)", cook: "Cook", hairstylist: "Hairstylist", sheet_metal_worker: "Sheet Metal Worker", refrigeration_ac_mechanic: "Refrigeration & AC Mechanic", industrial_electrician: "Industrial Electrician", mobile_crane_operator: "Mobile Crane Operator", instrumentation_and_control_technician: "Instrumentation & Control Technician", painter_and_decorator: "Painter and Decorator", ironworker: "Ironworker", boilermaker: "Boilermaker", bricklayer: "Bricklayer", powerline_technician: "Powerline Technician"
+            };
+            const selectedTradeText = tradeNames[trade] || "Your Trade";
+            tradeTitle.textContent = `${selectedTradeText} Exam`;
+            deniedTradeTitle.textContent = `Unlock ${selectedTradeText}`;
+
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    const userDocRef = db.collection('users').doc(user.uid);
+                    userDocRef.get().then(doc => {
+                        let hasAccess = false;
+                        if (doc.exists) {
+                            const userData = doc.data();
+                            if (userData.subscriptions && Array.isArray(userData.subscriptions)) {
+                                const now = new Date();
+                                hasAccess = userData.subscriptions.some(sub => 
+                                    sub.trade === trade && 
+                                    sub.status === 'active' &&
+                                    sub.expirationDate.toDate() > now
+                                );
+                            }
+                        }
+                        
+                        loader.classList.add('hidden');
+                        if (hasAccess) {
+                            accessGranted.classList.remove('hidden');
+                        } else {
+                            accessDenied.classList.remove('hidden');
+                        }
+                    }).catch(error => {
+                        console.error("Error getting user document:", error);
+                        loader.classList.add('hidden');
+                        accessDenied.classList.remove('hidden');
+                    });
+                } else {
+                    localStorage.setItem('checkoutRedirect', `exam_app.html?trade=${trade}`);
+                    window.location.href = 'login.html';
+                }
+            });
+
+            function updateDisplay(minutes) {
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                let timeString = '';
+                if (hours > 0) timeString += `${hours} hour${hours > 1 ? 's' : ''} `;
+                if (mins > 0) timeString += `${mins} minutes`;
+                timeDisplay.textContent = timeString.trim();
+
+                // Calculate questions based on 1.5 minutes per question
+                const questionCount = Math.floor(minutes / 1.5);
+                questionCountDisplay.textContent = `Approximately ${questionCount} questions`;
+            }
+
+            timeSlider.addEventListener('input', (e) => {
+                updateDisplay(e.target.value);
+            });
+            
+            startExamBtn.addEventListener('click', () => {
+                const selectedMinutes = timeSlider.value;
+                const questionCount = Math.floor(selectedMinutes / 1.5);
+                const selectedSeconds = selectedMinutes * 60;
+
+                localStorage.setItem('selectedTrade', trade);
+                localStorage.setItem('selectedQuestionCount', questionCount);
+                localStorage.setItem('selectedExamDurationSeconds', selectedSeconds); // Store duration
+                localStorage.setItem('selectedTradeText', selectedTradeText);
+                
+                window.location.href = 'exam_live.html';
+            });
+
+            document.querySelectorAll('.purchase-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const plan = button.dataset.plan;
+                    window.location.href = `checkout.html?trade=${trade}&plan=${plan}`;
+                });
+            });
+            
+            // Initial display update
+            updateDisplay(timeSlider.value);
+        });
+    </script>
+</body>
+</html>
