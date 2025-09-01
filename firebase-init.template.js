@@ -1,5 +1,5 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyCLSCUyBBAM33Viw96CDrNMOPHb4HVRGKc",
+  apiKey: "__API_KEY__",
   authDomain: "journeyman-edge-exams.firebaseapp.com",
   projectId: "journeyman-edge-exams",
   storageBucket: "journeyman-edge-exams.firebasestorage.app",
@@ -13,4 +13,3 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-
