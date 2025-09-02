@@ -19,6 +19,7 @@
         .tab-btn.active {
             border-color: #3b82f6;
             background-color: #1f2937;
+            color: white;
         }
     </style>
 </head>
@@ -49,7 +50,7 @@
             <h2 class="text-3xl font-bold mb-8">Your Profile</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 
-                <div class="md:col-span-1 bg-gray-900 p-6 rounded-lg shadow-lg">
+                <div class="md:col-span-1 bg-gray-900 p-6 rounded-lg shadow-lg h-fit">
                     <div class="flex flex-col items-center">
                         <div class="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center mb-4">
                             <svg class="w-12 h-12 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -67,20 +68,23 @@
                     <div>
                         <div class="border-b border-gray-700 mb-6">
                             <nav class="-mb-px flex space-x-6" aria-label="Tabs">
-                                <button class="tab-btn active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent" data-tab="subscriptions">My Subscriptions</button>
-                                <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-400 hover:text-white hover:border-gray-500" data-tab="settings">Account Settings</button>
+                                <button class="tab-btn active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" data-tab="subscriptions">My Subscriptions</button>
+                                <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-400 hover:text-white hover:border-gray-500" data-tab="settings">Account Settings</button>
                             </nav>
                         </div>
 
+                        <!-- Subscriptions Panel -->
                         <div id="subscriptions-panel" class="tab-panel">
                             <div id="no-subscriptions" class="hidden text-center py-12">
                                 <p class="text-gray-400">You don't have any active subscriptions.</p>
                                 <a href="index.html#pricing" class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">Browse Trades</a>
                             </div>
                             <div id="subscriptions-list" class="space-y-4">
-                                </div>
+                                <!-- Subscriptions will be injected here -->
+                            </div>
                         </div>
 
+                        <!-- Account Settings Panel -->
                         <div id="settings-panel" class="tab-panel hidden">
                            <div class="space-y-8">
                                 <div>
@@ -108,9 +112,11 @@
         </main>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <!-- Firebase SDK - UPDATED TO COMPATIBILITY VERSION -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <!-- Your Firebase Configuration -->
     <script src="firebase-init.js"></script>
     
     <script>
@@ -123,41 +129,36 @@
             const auth = firebase.auth();
             const db = firebase.firestore();
             
-            // --- General Page Elements ---
             const loader = document.getElementById('loader');
             const content = document.getElementById('content');
-            const logoutBtn = document.getElementById('logout-btn');
-
-            // --- User Info Elements ---
             const userNameDisplay = document.getElementById('user-name-display');
             const userEmailDisplay = document.getElementById('user-email-display');
             const userMemberSince = document.getElementById('user-member-since');
-
-            // --- Subscriptions Elements ---
-            const noSubscriptionsMessage = document.getElementById('no-subscriptions');
-            const subscriptionsList = document.getElementById('subscriptions-list');
-
-            // --- Settings Form Elements ---
+            const logoutBtn = document.getElementById('logout-btn');
+            
             const nameForm = document.getElementById('name-form');
             const displayNameInput = document.getElementById('display-name-input');
             const nameMessage = document.getElementById('name-message');
+
             const passwordForm = document.getElementById('password-form');
             const newPasswordInput = document.getElementById('new-password');
             const confirmNewPasswordInput = document.getElementById('confirm-new-password');
             const passwordMessage = document.getElementById('password-message');
-            
-            // --- Tab Elements ---
+
             const tabBtns = document.querySelectorAll('.tab-btn');
             const tabPanels = document.querySelectorAll('.tab-panel');
-            
+
+            const subscriptionsList = document.getElementById('subscriptions-list');
+            const noSubscriptionsMessage = document.getElementById('no-subscriptions');
+
             const tradeNames = {
                 electrician_construction: "Electrician (Construction)", welder: "Welder", carpenter: "Carpenter", plumber: "Plumber", steamfitter_pipefitter: "Steamfitter / Pipefitter", automotive_service_technician: "Automotive Service Technician", heavy_duty_equipment_technician: "Heavy Duty Equipment Technician", industrial_mechanic_millwright: "Industrial Mechanic (Millwright)", cook: "Cook", hairstylist: "Hairstylist", sheet_metal_worker: "Sheet Metal Worker", refrigeration_ac_mechanic: "Refrigeration & AC Mechanic", industrial_electrician: "Industrial Electrician", mobile_crane_operator: "Mobile Crane Operator", instrumentation_and_control_technician: "Instrumentation & Control Technician", painter_and_decorator: "Painter and Decorator", ironworker: "Ironworker", boilermaker: "Boilermaker", bricklayer: "Bricklayer", powerline_technician: "Powerline Technician"
             };
 
             auth.onAuthStateChanged(user => {
                 if (user) {
-                    content.classList.remove('hidden');
                     loader.classList.add('hidden');
+                    content.classList.remove('hidden');
 
                     userEmailDisplay.textContent = user.email;
                     
@@ -174,6 +175,7 @@
                             displaySubscriptions(userData.subscriptions);
                         }
                     });
+
                 } else {
                     window.location.href = 'login.html';
                 }
@@ -181,7 +183,7 @@
 
             function displaySubscriptions(subscriptions) {
                 subscriptionsList.innerHTML = '';
-                const activeSubs = subscriptions ? subscriptions.filter(s => s.status === 'active' && s.expirationDate.toDate() > new Date()) : [];
+                const activeSubs = subscriptions ? subscriptions.filter(s => s.status === 'active' && s.expirationDate && s.expirationDate.toDate() > new Date()) : [];
 
                 if (activeSubs.length === 0) {
                     noSubscriptionsMessage.classList.remove('hidden');
@@ -205,23 +207,32 @@
                     });
                 }
             }
-            
-            // --- Event Listeners & Form Handlers from original file ---
-             logoutBtn.addEventListener('click', () => {
+
+            logoutBtn.addEventListener('click', () => {
                 auth.signOut().then(() => {
                     window.location.href = 'index.html';
                 }).catch((error) => {
                     console.error('Logout Error:', error);
+                    alert('An error occurred while logging out. Please try again.');
                 });
             });
 
             tabBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    tabBtns.forEach(b => b.classList.remove('active', 'border-blue-500', 'bg-gray-800'));
-                    btn.classList.add('active', 'border-blue-500', 'bg-gray-800');
+                    tabBtns.forEach(b => {
+                        b.classList.remove('active');
+                        b.classList.add('text-gray-400', 'hover:text-white', 'hover:border-gray-500');
+                    });
+                    btn.classList.add('active');
+                    btn.classList.remove('text-gray-400', 'hover:text-white', 'hover:border-gray-500');
+                    
                     const tabName = btn.dataset.tab;
                     tabPanels.forEach(panel => {
-                        panel.id === `${tabName}-panel` ? panel.classList.remove('hidden') : panel.classList.add('hidden');
+                        if (panel.id === `${tabName}-panel`) {
+                            panel.classList.remove('hidden');
+} else {
+                            panel.classList.add('hidden');
+                        }
                     });
                 });
             });
@@ -230,34 +241,51 @@
                 e.preventDefault();
                 const newName = displayNameInput.value.trim();
                 const user = auth.currentUser;
-                if (!newName || !user) return;
-                nameMessage.textContent = 'Saving...';
-                user.updateProfile({ displayName: newName })
-                    .then(() => db.collection('users').doc(user.uid).update({ displayName: newName }))
-                    .then(() => {
+
+                if (newName && user) {
+                    nameMessage.textContent = 'Saving...';
+                    nameMessage.classList.remove('text-red-500', 'text-green-500');
+
+                    user.updateProfile({
+                        displayName: newName
+                    }).then(() => {
+                        return db.collection('users').doc(user.uid).update({
+                            displayName: newName
+                        });
+                    }).then(() => {
                         userNameDisplay.textContent = newName;
-                        nameMessage.textContent = 'Success!';
+                        nameMessage.textContent = 'Display name updated successfully!';
                         nameMessage.classList.add('text-green-500');
                     }).catch((error) => {
                         nameMessage.textContent = 'Error updating name.';
                         nameMessage.classList.add('text-red-500');
                     });
+                }
             });
 
             passwordForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const newPassword = newPasswordInput.value;
                 const confirmPassword = confirmNewPasswordInput.value;
+                const user = auth.currentUser;
+
                 passwordMessage.textContent = '';
+                passwordMessage.classList.remove('text-red-500', 'text-green-500');
+                
                 if (newPassword.length < 6) {
                     passwordMessage.textContent = "Password must be at least 6 characters.";
+                    passwordMessage.classList.add('text-red-500');
                     return;
                 }
+
                 if (newPassword !== confirmPassword) {
                     passwordMessage.textContent = "Passwords do not match.";
+                    passwordMessage.classList.add('text-red-500');
                     return;
                 }
-                auth.currentUser.updatePassword(newPassword).then(() => {
+                if (!user) return;
+
+                user.updatePassword(newPassword).then(() => {
                     passwordMessage.textContent = 'Password updated successfully!';
                     passwordMessage.classList.add('text-green-500');
                     passwordForm.reset();
