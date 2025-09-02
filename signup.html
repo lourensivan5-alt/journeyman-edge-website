@@ -18,13 +18,13 @@
 <body class="text-white">
     <header class="bg-gray-900 border-b border-gray-800">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="index.html" class="flex items-center space-x-2">
+            <a href="/index.html" class="flex items-center space-x-2">
                  <svg class="h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
                 <h1 class="text-xl font-black text-white">Journeyman<span class="text-blue-500">Edge</span></h1>
             </a>
-            <a href="login.html" class="text-gray-400 hover:text-white" title="Profile / Log In">
+            <a href="/login.html" class="text-gray-400 hover:text-white" title="Profile / Log In">
                 <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -69,7 +69,7 @@
             </form>
             <p id="error-message" class="text-red-500 text-center mt-4 h-5"></p>
             <p class="text-center text-sm text-gray-400 mt-6">
-                Already have an account? <a href="login.html" class="font-bold text-blue-400 hover:underline">Log in here.</a>
+                Already have an account? <a href="/login.html" class="font-bold text-blue-400 hover:underline">Log in here.</a>
             </p>
         </div>
     </div>
@@ -79,80 +79,88 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <!-- Firebase Init -->
-    <script src="firebase-init.js"></script>
+    <script src="/firebase-init.js"></script>
     
     <script>
-        const signupForm = document.getElementById('signup-form');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const confirmPasswordInput = document.getElementById('confirm-password');
-        const errorMessage = document.getElementById('error-message');
-        const submitBtn = document.getElementById('submit-btn');
-        const googleSignInBtn = document.getElementById('google-signin-btn');
+        document.addEventListener('DOMContentLoaded', () => {
+            const signupForm = document.getElementById('signup-form');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirm-password');
+            const errorMessage = document.getElementById('error-message');
+            const submitBtn = document.getElementById('submit-btn');
+            const googleSignInBtn = document.getElementById('google-signin-btn');
 
-        // --- EMAIL/PASSWORD SIGN-UP ---
-        signupForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = emailInput.value;
-            const password = passwordInput.value;
-            const confirmPassword = confirmPasswordInput.value;
-            errorMessage.textContent = '';
-            if (password !== confirmPassword) {
-                errorMessage.textContent = 'Passwords do not match.';
-                return;
-            }
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Creating Account...';
-            firebase.auth().createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    return firebase.firestore().collection('users').doc(user.uid).set({
-                        email: user.email,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        subscriptions: []
-                    });
-                })
-                .then(() => {
-                    window.location.href = 'profile.html';
-                })
-                .catch((error) => {
-                    switch (error.code) {
-                        case 'auth/email-already-in-use':
-                            errorMessage.textContent = 'An account with this email already exists.';
-                            break;
-                        case 'auth/weak-password':
-                            errorMessage.textContent = 'Password should be at least 6 characters.';
-                            break;
-                        default:
-                            errorMessage.textContent = 'An error occurred. Please try again.';
-                    }
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Create Account';
-                });
-        });
+            const auth = firebase.auth();
+            const db = firebase.firestore();
 
-        // --- GOOGLE SIGN-IN FUNCTION ---
-        googleSignInBtn.addEventListener('click', () => {
-             const provider = new firebase.auth.GoogleAuthProvider();
-             firebase.auth().signInWithPopup(provider)
-                .then((result) => {
-                    const user = result.user;
-                    const userDocRef = firebase.firestore().collection('users').doc(user.uid);
-                    return userDocRef.get().then((doc) => {
-                        if (!doc.exists) { // Create user profile only if they are new
-                            return userDocRef.set({
-                                email: user.email,
-                                displayName: user.displayName || 'New User',
-                                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                                subscriptions: []
-                            });
+            // --- EMAIL/PASSWORD SIGN-UP ---
+            signupForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = emailInput.value;
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                errorMessage.textContent = '';
+                if (password !== confirmPassword) {
+                    errorMessage.textContent = 'Passwords do not match.';
+                    return;
+                }
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creating Account...';
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+                        return db.collection('users').doc(user.uid).set({
+                            email: user.email,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            subscriptions: []
+                        });
+                    })
+                    .then(() => {
+                        window.location.href = '/profile.html';
+                    })
+                    .catch((error) => {
+                        switch (error.code) {
+                            case 'auth/email-already-in-use':
+                                errorMessage.textContent = 'An account with this email already exists.';
+                                break;
+                            case 'auth/weak-password':
+                                errorMessage.textContent = 'Password should be at least 6 characters.';
+                                break;
+                            default:
+                                errorMessage.textContent = 'An error occurred. Please try again.';
                         }
-                    }).then(() => {
-                         window.location.href = 'profile.html';
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Create Account';
                     });
-                }).catch((error) => {
-                    errorMessage.textContent = error.message;
-                });
+            });
+
+            // --- GOOGLE SIGN-IN FUNCTION ---
+            googleSignInBtn.addEventListener('click', () => {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                auth.signInWithPopup(provider)
+                    .then((result) => {
+                        const user = result.user;
+                        const userDocRef = db.collection('users').doc(user.uid);
+                        return userDocRef.get().then((doc) => {
+                            if (!doc.exists) { // Create user profile only if they are new
+                                return userDocRef.set({
+                                    email: user.email,
+                                    displayName: user.displayName || 'New User',
+                                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                    subscriptions: []
+                                });
+                            }
+                        }).then(() => {
+                            const redirectUrl = localStorage.getItem('checkoutRedirect') || '/profile.html';
+                            localStorage.removeItem('checkoutRedirect');
+                            window.location.href = redirectUrl;
+                        });
+                    }).catch((error) => {
+                        errorMessage.textContent = error.message;
+                        console.error("Google Sign-in Error:", error);
+                    });
+            });
         });
     </script>
 </body>
